@@ -1,0 +1,16 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+configDescList=org.eclipse.launchbar.core.descriptorType.default\:stm32f4xx_Drivers Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001_HELLO_WORLD,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:00_4Peri_Clock_Enable,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:sample_app
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001_HELLO_WORLD/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001_HELLO_WORLD/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001_hello_world_retur/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:001_hello_world_retur/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:sample_app/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:sample_app/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:stm32f407_drivers\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:stm32f407_drivers\ Debug/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:stm32f407_drivers/activeLaunchMode=debug
+org.eclipse.launchbar.core.descriptorType.default\:stm32f4xx_Drivers\ Debug/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:stm32f4xx_Drivers\ Debug/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local

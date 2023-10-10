@@ -1,0 +1,9 @@
+23:57:38 **** Clean-only build of configuration Debug for project 002_SAMPLE_APP ****
+make -j12 clean 
+rm -rf ./Startup/startup_stm32f407vgtx.d ./Startup/startup_stm32f407vgtx.o
+rm -rf ./Src/main.d ./Src/main.o ./Src/main.su ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su
+rm -rf 002_SAMPLE_APP.elf 002_SAMPLE_APP.list 002_SAMPLE_APP.map default.size.stdout
+ 
+
+23:57:39 Build Finished. 0 errors, 0 warnings. (took 307ms)
+

@@ -1,0 +1,470 @@
+/*
+ * main.c
+ *
+ *  Created on: Sep 24, 2023
+ *      Author: wardawg
+ */
+
+/*
+ * 24-09-2023
+ *
+ * For multiple timers the start timer api calls the same MSP_INIT function
+ * if they are in the the same mode of operation (PWM/IC/OC)
+ *
+ * UPDATE - It Works. All 4 Timers produce a PWM, perfectly
+ *
+ * For all timers, all the odd channels are for the RPWM
+ * and all even channels are for the LPWM
+ *
+ * All enable pins are connected to PE7-PE14
+ */
+
+
+#include "main.h"
+#include "stm32f4xx.h"
+#include "stm32f407xx.h"
+#include "stm32f407_spi_driver.h"
+#include <stdio.h>
+#include <string.h>
+
+/*
+ * Prototypes of all function definitions
+ */
+void delay(void);
+
+void button_init(void);
+
+void enable_init(void);
+
+void SystemClock_Config_HSE(uint8_t clk_freq);
+
+void Error_Handler(void);
+
+void led_init(void);
+
+void timer2_init(void);
+
+void timer3_init(void);
+
+void timer4_init(void);
+
+void timer9_init(void);
+
+
+
+
+/*
+ * Handle Variables for all peripherals
+ */
+TIM_HandleTypeDef htimer2;
+TIM_HandleTypeDef htimer3;
+TIM_HandleTypeDef htimer4;
+TIM_HandleTypeDef htimer9;
+GPIO_InitTypeDef led;
+GPIO_InitTypeDef button;
+GPIO_InitTypeDef enable;
+
+
+
+/*
+ * SPACE FOR ALL CONSTANTS TO BE DECLARED IN A GLOBAL SCOPE
+ */
+
+uint16_t brightness = 0;
+/*
+ * MAIN CODE
+ */
+int main (void){
+
+
+	HAL_Init();
+
+	SystemClock_Config_HSE(SYS_CLK_FREQ_50_MHZ);
+
+	button_init();
+
+	enable_init();
+
+	led_init();
+
+	timer2_init();
+
+	timer3_init();
+
+	timer4_init();
+
+	timer9_init();
+
+	if(HAL_TIM_PWM_Start(&htimer4, TIM_CHANNEL_1) !=HAL_OK){
+		Error_Handler();
+	}
+	if(HAL_TIM_PWM_Start(&htimer4, TIM_CHANNEL_2) !=HAL_OK){
+		Error_Handler();
+	}
+	if(HAL_TIM_PWM_Start(&htimer4, TIM_CHANNEL_3) !=HAL_OK){
+		Error_Handler();
+	}
+	if(HAL_TIM_PWM_Start(&htimer4, TIM_CHANNEL_4) !=HAL_OK){
+		Error_Handler();
+	}
+
+
+	while(1){
+
+		//Toggle the speed via user button
+		if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0)){
+
+
+			brightness=20;
+			//Setting PWM Capture/compare value on individual channels of the same timer
+			__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_1,brightness);
+			HAL_Delay(1);
+
+			__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_2,brightness);
+			HAL_Delay(1);
+
+			__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_3,brightness);
+			HAL_Delay(1);
+
+			__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_4,brightness);
+			HAL_Delay(1);
+
+		}
+
+		else {
+			{
+				brightness=80;
+				//Setting PWM Capture/compare value on individual channels of the same timer
+				__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_1,brightness);
+				HAL_Delay(1);
+
+				__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_2,brightness);
+				HAL_Delay(1);
+
+				__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_3,brightness);
+				HAL_Delay(1);
+
+				__HAL_TIM_SET_COMPARE(&htimer4,TIM_CHANNEL_4,brightness);
+				HAL_Delay(1);
+			}
+		}
+	}
+}
+
+/*
+ * IMPLEMENTATION OF ALL USER DEFINED FUNCTIONS APART FROM THE MAIN FUNCTION
+ * IN THE ORDER OF THEIR PROTOTYPES
+ */
+void  delay(){
+	for (int i=0;i<500000;i++);
+}
+
+void button_init(void){
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	button.Mode = GPIO_MODE_INPUT;
+	button.Pin = GPIO_PIN_0;
+	button.Pull = GPIO_NOPULL;
+	button.Speed = GPIO_SPEED_FAST;
+	HAL_GPIO_Init(GPIOA, &button);
+
+}
+
+void enable_init(void){
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	enable.Mode = GPIO_MODE_OUTPUT_PP;
+	enable.Pull = GPIO_NOPULL;
+	enable.Speed = GPIO_SPEED_HIGH;
+	enable.Pin = GPIO_PIN_7 |GPIO_PIN_8 |\
+			GPIO_PIN_9 |GPIO_PIN_10 |\
+			GPIO_PIN_11 |GPIO_PIN_12 |\
+			GPIO_PIN_13 |GPIO_PIN_14 ;
+	HAL_GPIO_Init(GPIOE, &enable);
+
+}
+
+	void SystemClock_Config_HSE(uint8_t clk_freq){
+		RCC_OscInitTypeDef osc_init;
+		RCC_ClkInitTypeDef clk_init;
+
+		uint8_t FLatency = 0;
+
+		osc_init.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_HSI ;
+		osc_init.HSEState = RCC_HSE_ON;
+		osc_init.HSIState = RCC_HSI_ON;
+		osc_init.PLL.PLLState = RCC_PLL_ON;
+		osc_init.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+		switch (clk_freq){
+		case SYS_CLK_FREQ_50_MHZ:{
+			osc_init.PLL.PLLM = 8;
+			osc_init.PLL.PLLN = 100;
+			osc_init.PLL.PLLP = 2;
+			osc_init.PLL.PLLQ = 2;
+
+			clk_init.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | \
+					RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+			clk_init.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+			clk_init.AHBCLKDivider = RCC_SYSCLK_DIV1;
+			clk_init.APB1CLKDivider = RCC_HCLK_DIV2;
+			clk_init.APB2CLKDivider = RCC_HCLK_DIV2;
+
+			FLatency = FLASH_ACR_LATENCY_1WS;
+
+			__HAL_RCC_GPIOD_CLK_ENABLE();
+			led.Pin = GPIO_PIN_12;
+			led.Mode = GPIO_MODE_OUTPUT_PP;
+			led.Speed = GPIO_SPEED_FREQ_HIGH;
+			led.Pull = GPIO_NOPULL;
+
+			HAL_GPIO_Init(GPIOD, &led);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12,GPIO_PIN_SET);
+			delay();
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12,GPIO_PIN_RESET);
+
+			break;
+		}
+
+		case SYS_CLK_FREQ_84_MHZ:{
+			osc_init.PLL.PLLM = 8;
+			osc_init.PLL.PLLN = 168;
+			osc_init.PLL.PLLP = 2;
+			osc_init.PLL.PLLQ = 2;
+
+
+			clk_init.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | \
+					RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+			clk_init.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+			clk_init.AHBCLKDivider = RCC_SYSCLK_DIV1;
+			clk_init.APB1CLKDivider = RCC_HCLK_DIV2;
+			clk_init.APB2CLKDivider = RCC_HCLK_DIV2;
+
+			FLatency = FLASH_ACR_LATENCY_2WS;
+			__HAL_RCC_GPIOD_CLK_ENABLE();
+			led.Pin = GPIO_PIN_13;
+			led.Mode = GPIO_MODE_OUTPUT_PP;
+			led.Speed = GPIO_SPEED_FREQ_HIGH;
+			led.Pull = GPIO_NOPULL;
+
+			HAL_GPIO_Init(GPIOD, &led);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13,GPIO_PIN_SET);
+			delay();
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_13,GPIO_PIN_RESET);
+			break;
+		}
+
+		case SYS_CLK_FREQ_120_MHZ:{
+			osc_init.PLL.PLLM = 8;
+			osc_init.PLL.PLLN = 240;
+			osc_init.PLL.PLLP = 2;
+			osc_init.PLL.PLLQ = 2;
+
+
+			clk_init.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | \
+					RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+			clk_init.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+			clk_init.AHBCLKDivider = RCC_SYSCLK_DIV1;
+			clk_init.APB1CLKDivider = RCC_HCLK_DIV4;
+			clk_init.APB2CLKDivider = RCC_HCLK_DIV2;
+
+			FLatency = FLASH_ACR_LATENCY_3WS;
+			__HAL_RCC_GPIOD_CLK_ENABLE();
+			led.Pin = GPIO_PIN_14;
+			led.Mode = GPIO_MODE_OUTPUT_PP;
+			led.Speed = GPIO_SPEED_FREQ_HIGH;
+			led.Pull = GPIO_NOPULL;
+
+			HAL_GPIO_Init(GPIOD, &led);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14,GPIO_PIN_SET);
+			delay();
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14,GPIO_PIN_RESET);
+			break;
+		}
+		case SYS_CLK_FREQ_168_MHZ:{
+
+			__HAL_RCC_PWR_CLK_ENABLE();
+			__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+			osc_init.PLL.PLLM = 8;
+			osc_init.PLL.PLLN = 336;
+			osc_init.PLL.PLLP = 2;
+			osc_init.PLL.PLLQ = 2;
+
+
+			clk_init.ClockType = RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | \
+					RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+			clk_init.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+			clk_init.AHBCLKDivider = RCC_SYSCLK_DIV1;
+			clk_init.APB1CLKDivider = RCC_HCLK_DIV4;
+			clk_init.APB2CLKDivider = RCC_HCLK_DIV2;
+
+			FLatency = FLASH_ACR_LATENCY_5WS;
+			__HAL_RCC_GPIOD_CLK_ENABLE();
+			led.Pin = GPIO_PIN_15;
+			led.Mode = GPIO_MODE_OUTPUT_PP;
+			led.Speed = GPIO_SPEED_FREQ_HIGH;
+			led.Pull = GPIO_NOPULL;
+
+			HAL_GPIO_Init(GPIOD, &led);
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15,GPIO_PIN_SET);
+			delay();
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15,GPIO_PIN_RESET);
+			break;
+		}
+		default:
+			return;
+		}
+		if (HAL_RCC_OscConfig(&osc_init) != HAL_OK){
+			Error_Handler();
+		}
+
+		if( HAL_RCC_ClockConfig(&clk_init, FLatency) != HAL_OK)
+		{
+			Error_Handler();
+		}
+		HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+		HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+	}
+
+void Error_Handler(){
+	while(1);
+}
+
+void led_init(){
+	//1. Enabling the clock for the LED GPIOS
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+
+	//2. Setting the parameters of the operation
+	led.Mode = GPIO_MODE_OUTPUT_PP;
+	led.Pull = GPIO_NOPULL;
+	led.Speed = GPIO_SPEED_FAST;
+
+	led.Pin = GPIO_PIN_12;
+	HAL_GPIO_Init(GPIOD, &led); //green
+
+	led.Pin = GPIO_PIN_13;
+	HAL_GPIO_Init(GPIOD, &led); //orange
+
+	led.Pin = GPIO_PIN_14;
+	HAL_GPIO_Init(GPIOD, &led); //red
+
+	led.Pin = GPIO_PIN_15;
+	HAL_GPIO_Init(GPIOD, &led); //blue
+}
+
+void timer2_init(void){
+	htimer2.Instance = TIM2;
+	htimer2.Init.Period = 75-1;
+	htimer2.Init.Prescaler = 4999;
+	if (HAL_TIM_PWM_Init(&htimer2) != HAL_OK){
+		Error_Handler();
+	}
+
+	TIM_OC_InitTypeDef timer2PWM_Config;
+
+	memset(&timer2PWM_Config,0,sizeof(timer2PWM_Config));
+
+	timer2PWM_Config.OCMode = TIM_OCMODE_PWM1;
+	timer2PWM_Config.OCPolarity = TIM_OCPOLARITY_HIGH;
+	timer2PWM_Config.Pulse = (htimer2.Init.Period * 25)/100;
+
+	//RPWM BTS_1
+	if (HAL_TIM_PWM_ConfigChannel(&htimer2,&timer2PWM_Config,TIM_CHANNEL_3) != HAL_OK){
+		Error_Handler();
+	}
+	//LPWM BTS_1
+	if (HAL_TIM_PWM_ConfigChannel(&htimer2,&timer2PWM_Config,TIM_CHANNEL_4) != HAL_OK){
+		Error_Handler();
+	}
+
+}
+
+void timer3_init(void){
+	htimer3.Instance = TIM3;
+	htimer3.Init.Period = 75-1;
+	htimer3.Init.Prescaler = 4999;
+	if (HAL_TIM_PWM_Init(&htimer3) != HAL_OK){
+		Error_Handler();
+	}
+
+	TIM_OC_InitTypeDef timer3PWM_Config;
+
+	memset(&timer3PWM_Config,0,sizeof(timer3PWM_Config));
+
+	timer3PWM_Config.OCMode = TIM_OCMODE_PWM1;
+	timer3PWM_Config.OCPolarity = TIM_OCPOLARITY_HIGH;
+	timer3PWM_Config.Pulse = (htimer3.Init.Period * 25)/100;
+
+	//RPWM BTS_2
+	if (HAL_TIM_PWM_ConfigChannel(&htimer3,&timer3PWM_Config,TIM_CHANNEL_1) != HAL_OK){
+		Error_Handler();
+	}
+	//LPWM BTS_2
+	if (HAL_TIM_PWM_ConfigChannel(&htimer3,&timer3PWM_Config,TIM_CHANNEL_2) != HAL_OK){
+		Error_Handler();
+	}
+}
+
+void timer4_init(void){
+
+	htimer4.Instance = TIM4;
+	htimer4.Init.Period = 1000-1;
+	htimer4.Init.Prescaler = 4999;
+	if (HAL_TIM_PWM_Init(&htimer4) != HAL_OK){
+		Error_Handler();
+	}
+
+	TIM_OC_InitTypeDef timer4PWM_Config;
+
+	memset(&timer4PWM_Config,0,sizeof(timer4PWM_Config));
+
+	timer4PWM_Config.OCMode = TIM_OCMODE_PWM1;
+	timer4PWM_Config.OCNPolarity = TIM_OCPOLARITY_HIGH;
+
+	//RPWM BTS_3
+	timer4PWM_Config.Pulse = (htimer4.Init.Period * 25)/100;
+	if (HAL_TIM_PWM_ConfigChannel(&htimer4, &timer4PWM_Config, TIM_CHANNEL_1) != HAL_OK){
+		Error_Handler();
+	}
+
+	//LPWM BTS_3
+	timer4PWM_Config.Pulse = (htimer4.Init.Period * 40)/100;
+	if (HAL_TIM_PWM_ConfigChannel(&htimer4, &timer4PWM_Config, TIM_CHANNEL_2) != HAL_OK){
+		Error_Handler();
+	}
+	timer4PWM_Config.Pulse = (htimer4.Init.Period * 75)/100;
+	if (HAL_TIM_PWM_ConfigChannel(&htimer4, &timer4PWM_Config, TIM_CHANNEL_3) != HAL_OK){
+		Error_Handler();
+	}
+	//LPWM BTS_3
+	timer4PWM_Config.Pulse = (htimer4.Init.Period * 90)/100;
+	if (HAL_TIM_PWM_ConfigChannel(&htimer4, &timer4PWM_Config, TIM_CHANNEL_4) != HAL_OK){
+		Error_Handler();
+	}
+
+}
+
+void timer9_init(void){
+	htimer9.Instance = TIM9;
+	htimer9.Init.Period = 75-1;
+	htimer9.Init.Prescaler = 4999;
+	if (HAL_TIM_PWM_Init(&htimer9) != HAL_OK){
+		Error_Handler();
+	}
+
+	TIM_OC_InitTypeDef timer9PWM_Config;
+
+	memset(&timer9PWM_Config,0,sizeof(timer9PWM_Config));
+
+	timer9PWM_Config.OCMode = TIM_OCMODE_PWM1;
+	timer9PWM_Config.OCPolarity = TIM_OCPOLARITY_HIGH;
+	timer9PWM_Config.Pulse = (htimer9.Init.Period * 25)/100;
+
+	//RPWM BTS_2
+	if (HAL_TIM_PWM_ConfigChannel(&htimer9,&timer9PWM_Config,TIM_CHANNEL_1) != HAL_OK){
+		Error_Handler();
+	}
+	//LPWM BTS_2
+	if (HAL_TIM_PWM_ConfigChannel(&htimer9,&timer9PWM_Config,TIM_CHANNEL_2) != HAL_OK){
+		Error_Handler();
+	}
+}
+

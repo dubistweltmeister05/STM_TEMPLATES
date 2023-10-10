@@ -1,0 +1,10 @@
+11:11:18 **** Build of configuration Debug for project 00_4Peri_Clock_Enable ****
+make -j12 all 
+arm-none-eabi-size   00_4Peri_Clock_Enable.elf 
+   text	   data	    bss	    dec	    hex	filename
+    700	      8	   1568	   2276	    8e4	00_4Peri_Clock_Enable.elf
+Finished building: default.size.stdout
+ 
+
+11:11:18 Build Finished. 0 errors, 0 warnings. (took 191ms)
+

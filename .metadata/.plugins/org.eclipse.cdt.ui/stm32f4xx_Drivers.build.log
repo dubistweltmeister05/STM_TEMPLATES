@@ -1,0 +1,44 @@
+21:33:06 **** Build of configuration Debug for project stm32F4xx_drivers ****
+make -j12 all 
+arm-none-eabi-gcc -mcpu=cortex-m4 -g -DDEBUG -c -x assembler-with-cpp -MMD -MP -MF"Startup/startup_stm32f407vgtx.d" -MT"Startup/startup_stm32f407vgtx.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Startup/startup_stm32f407vgtx.o" "../Startup/startup_stm32f407vgtx.s"
+arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
+arm-none-eabi-gcc "../Src/syscalls.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/syscalls.d" -MT"Src/syscalls.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/syscalls.o"
+arm-none-eabi-gcc "../Src/sysmem.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Src/sysmem.d" -MT"Src/sysmem.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/sysmem.o"
+arm-none-eabi-gcc "../Drivers/Src/011_I2C_MASTER_RX_TEST2.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/Src/011_I2C_MASTER_RX_TEST2.d" -MT"Drivers/Src/011_I2C_MASTER_RX_TEST2.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/Src/011_I2C_MASTER_RX_TEST2.o"
+arm-none-eabi-gcc "../Drivers/Src/I2C_Driver.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/Src/I2C_Driver.d" -MT"Drivers/Src/I2C_Driver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/Src/I2C_Driver.o"
+arm-none-eabi-gcc "../Drivers/Src/SPI_Driver.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/Src/SPI_Driver.d" -MT"Drivers/Src/SPI_Driver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/Src/SPI_Driver.o"
+arm-none-eabi-gcc "../Drivers/Src/dfg.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/Src/dfg.d" -MT"Drivers/Src/dfg.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/Src/dfg.o"
+arm-none-eabi-gcc "../Drivers/Src/stm32f407xx_gpio_driver.c" -mcpu=cortex-m4 -std=gnu11 -g -DDEBUG -DSTM32 -DSTM32F407G_DISC1 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Drivers/Src/stm32f407xx_gpio_driver.d" -MT"Drivers/Src/stm32f407xx_gpio_driver.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Drivers/Src/stm32f407xx_gpio_driver.o"
+../Src/main.c:22:4: warning: #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use." [-Wcpp]
+   22 |   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
+      |    ^~~~~~~
+../Drivers/Src/I2C_Driver.c:7:10: fatal error: I2C_Driver.h: No such file or directory
+    7 | #include "I2C_Driver.h"
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+../Drivers/Src/dfg.c:7:10: fatal error: dfg.h: No such file or directory
+    7 | #include <dfg.h>
+      |          ^~~~~~~
+compilation terminated.
+../Drivers/Src/011_I2C_MASTER_RX_TEST2.c:10:10: fatal error: stm32f407xx.h: No such file or directory
+   10 | #include "stm32f407xx.h"
+      |          ^~~~~~~~~~~~~~~
+compilation terminated.
+../Drivers/Src/stm32f407xx_gpio_driver.c:7:10: fatal error: stm32f407xx_gpio_driver.h: No such file or directory
+    7 | #include "stm32f407xx_gpio_driver.h"
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Drivers/Src/subdir.mk:31: Drivers/Src/I2C_Driver.o] Error 1
+make: *** Waiting for unfinished jobs....
+make: *** [Drivers/Src/subdir.mk:31: Drivers/Src/dfg.o] Error 1
+make: *** [Drivers/Src/subdir.mk:31: Drivers/Src/011_I2C_MASTER_RX_TEST2.o] Error 1
+make: *** [Drivers/Src/subdir.mk:31: Drivers/Src/stm32f407xx_gpio_driver.o] Error 1
+../Drivers/Src/SPI_Driver.c:7:10: fatal error: stm32f407xx.h: No such file or directory
+    7 | #include "stm32f407xx.h"
+      |          ^~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Drivers/Src/subdir.mk:31: Drivers/Src/SPI_Driver.o] Error 1
+"make -j12 all" terminated with exit code 2. Build might be incomplete.
+
+21:33:07 Build Failed. 11 errors, 1 warnings. (took 615ms)
+
